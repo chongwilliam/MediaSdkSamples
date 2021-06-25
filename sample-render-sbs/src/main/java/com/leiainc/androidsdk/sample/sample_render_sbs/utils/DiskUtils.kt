@@ -8,6 +8,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.OutputStream
+import android.util.Log
 
 object DiskUtils {
 
@@ -15,6 +16,13 @@ object DiskUtils {
         val testFile = File(
             context.externalCacheDir, getFileNameFromResource(context, defaultImage)
         )
+
+        // delete file in directeory to enforce update
+//        val cacheFolder = File(context.externalCacheDir.toString())
+//        cacheFolder.deleteRecursively()
+        val deleted = testFile.delete()
+        Log.i("File Deletion Success: ", deleted.toString())
+
         try {
             createFile(context, testFile.path, defaultImage)
         } catch (e: IOException) {

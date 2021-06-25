@@ -2,14 +2,17 @@ package com.leiainc.androidsdk.sample.sample_play_sbs_video
 
 import android.graphics.SurfaceTexture
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
 import android.view.Surface
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.LoopingMediaSource
 import com.google.android.exoplayer2.source.MediaSource
+import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.source.dash.DashMediaSource
+import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
 import com.google.android.exoplayer2.util.Util
@@ -50,11 +53,33 @@ class SbsVideoActivity : AppCompatActivity(), SurfaceTextureReadyCallback {
         exoPlayer.setVideoSurface(Surface(surfaceTexture))
         val userAgent = Util.getUserAgent(this, "exoplayer2example")
         val uri = Uri.parse(
-            "https://dev.streaming.leialoft.com/out/v1/08cd49f09fbc4a1e9c063424fa0bfc00/7845cda1bdd5494db13a24f5d13374ea/adacb4edf0434177ae441f124d989fe7/index.mpd"
+//            "https://dev.streaming.leialoft.com/out/v1/08cd49f09fbc4a1e9c063424fa0bfc00/7845cda1bdd5494db13a24f5d13374ea/adacb4edf0434177ae441f124d989fe7/index.mpd"
+        "http://localhost:5000/o1k.mp4"
         )
         val dataSourceFactory: DataSource.Factory = DefaultHttpDataSourceFactory(userAgent)
-        val videoSource: MediaSource =
-            DashMediaSource.Factory(dataSourceFactory).createMediaSource(uri)
+//        val videoSource: MediaSource =
+//            DashMediaSource.Factory(dataSourceFactory).createMediaSource(uri)
+//        val videoSource: MediaSource =
+//            ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(uri)
+        val videoSource: MediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
+            .createMediaSource(MediaItem.fromUri(uri))
+        val loopingSource = LoopingMediaSource(videoSource)
+        exoPlayer.prepare(loopingSource)
+    }
+
+    private fun updateSource() {
+        val userAgent = Util.getUserAgent(this, "exoplayer2example")
+        val uri = Uri.parse(
+//            "https://dev.streaming.leialoft.com/out/v1/08cd49f09fbc4a1e9c063424fa0bfc00/7845cda1bdd5494db13a24f5d13374ea/adacb4edf0434177ae441f124d989fe7/index.mpd"
+            "http://localhost:5000/o1k.mp4"
+        )
+        val dataSourceFactory: DataSource.Factory = DefaultHttpDataSourceFactory(userAgent)
+//        val videoSource: MediaSource =
+//            DashMediaSource.Factory(dataSourceFactory).createMediaSource(uri)
+//        val videoSource: MediaSource =
+//            ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(uri)
+        val videoSource: MediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
+            .createMediaSource(MediaItem.fromUri(uri))
         val loopingSource = LoopingMediaSource(videoSource)
         exoPlayer.prepare(loopingSource)
     }
@@ -74,6 +99,14 @@ class SbsVideoActivity : AppCompatActivity(), SurfaceTextureReadyCallback {
         /*  Make app full screen */
         setFullScreenImmersive()
         exoPlayer.playWhenReady = true
+
+        /* Run configuration again after mp4 duration, and restart */
+        val handler = Handler()
+        handler.postDelayed({
+            updateSource()
+            onResume()
+        }, 20000)  // adjust this value based on stereo implementation
+
     }
 
     override fun onStop() {
