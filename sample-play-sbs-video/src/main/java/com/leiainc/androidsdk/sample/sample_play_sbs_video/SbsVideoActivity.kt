@@ -63,7 +63,8 @@ class SbsVideoActivity : AppCompatActivity(), SurfaceTextureReadyCallback {
 //            ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(uri)
         val videoSource: MediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
             .createMediaSource(MediaItem.fromUri(uri))
-        val loopingSource = LoopingMediaSource(videoSource)
+//        val loopingSource = LoopingMediaSource(videoSource)
+        val loopingSource = videoSource
         exoPlayer.prepare(loopingSource)
     }
 
@@ -80,8 +81,10 @@ class SbsVideoActivity : AppCompatActivity(), SurfaceTextureReadyCallback {
 //            ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(uri)
         val videoSource: MediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
             .createMediaSource(MediaItem.fromUri(uri))
-        val loopingSource = LoopingMediaSource(videoSource)
+//        val loopingSource = LoopingMediaSource(videoSource)
+        val loopingSource = videoSource
         exoPlayer.prepare(loopingSource)
+
     }
 
     override fun onPause() {
@@ -105,7 +108,7 @@ class SbsVideoActivity : AppCompatActivity(), SurfaceTextureReadyCallback {
         handler.postDelayed({
             updateSource()
             onResume()
-        }, 20000)  // adjust this value based on stereo implementation
+        }, 70000)  // adjust this value based on stereo implementation (currently at 1 min), additional 10 seconds for write buffer
 
     }
 
