@@ -72,7 +72,7 @@ class SbsRenderDemoActivity : AppCompatActivity() {
 //                Thread.sleep(1000)
 //                handler.postDelayed({}, 1000)
                 onResume()
-        }, 5000)
+        }, 1000)
     }
 
     private fun setFullScreenImmersive() {
